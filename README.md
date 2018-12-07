@@ -77,6 +77,8 @@ issues that are returned from a given project. Fields that
 can be used: *_id*, *issue_title*, *issue_text*, *created_on*, 
 *updated_on*, *created_by*, *assigned_to*, *open*, *status_text*.
 Users can pass as many fields as request params as they want.
+The error **Project ${projectName} does not exist.** is returned if the provided 
+project name doesn't belong to an existing project in the database.
 
 ## Getting Started
 

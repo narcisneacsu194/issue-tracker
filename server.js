@@ -118,6 +118,22 @@ app.delete('/api/issues/:projectname', (req, res) => {
   }).catch((err) => res.status(400).send(`Something went wrong -> ${err}`));
 });
 
+app.get('/api/issues/:projectname', (req, res) => {
+  const projectName = req.params.projectname;
+  
+  Project.findOne({ name: projectName }).then((project) => {
+    if(!project){
+      return res.status(404).send(`Project ${projectName} does not exist.`);
+    }
+
+    return Issue.find({ project: projectName});
+  }).then((issues) => {
+    if (!(issues instanceof Array)) return;
+
+    res.send(issues);
+  }).catch((err) => res.status(400).send(`Something went wrong -> ${err}`));
+});
+
 app.listen(port, () => {
     console.log(`Server started up on port ${port}`);
 });
