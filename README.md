@@ -67,9 +67,9 @@ Microservice project for tracking issues/bugs for different development projects
 * *DELETE /api/issues/{projectname}* will delete a specific 
 project issue by its *_id* field, which must be specified in the request body. If the issue is deleted successfully, the message 
 **'deleted ' + _id** is returned.
-If no id is specified, the message **_id error** is returned.
-If the *_id* field has an invalid format, or it doesn't match
-with one from the database, the message **'could not delete' + _id** is returned. This same message will be displayed if the *projectname* doesn't exist.
+If no id is specified, or has an invalid format, the message **_id error** is returned.
+If the *_id* field doesn't match with one from the database, the message **'could not delete' + _id** is returned. This same message will be displayed if a project with 
+the given name as a request param doesn't exist.
 
 * *GET /api/issues/{projectname}* returns an array of all the issues from a specific project. Each issue is displayed as it would be displayed in the POST response body.
 This endpoint can also have query params, to filter the 
