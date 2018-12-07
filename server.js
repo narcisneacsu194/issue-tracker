@@ -120,17 +120,14 @@ app.delete('/api/issues/:projectname', (req, res) => {
 
 app.get('/api/issues/:projectname', (req, res) => {
   const projectName = req.params.projectname;
-  
-  Project.findOne({ name: projectName }).then((project) => {
-    if(!project){
-      return res.status(404).send(`Project ${projectName} does not exist.`);
-    }
-
-    return Issue.find({ project: projectName});
-  }).then((issues) => {
-    if (!(issues instanceof Array)) return;
-
-    res.send(issues);
+  const params = req.query;
+  params.project = projectName;
+  Issue.find(params).then((issues) => {
+    const newIssues = issues.map((issue) => {
+      return _.pick(issue, ['issue_title', 'issue_text', 'created_on', 
+      'updated_on', 'created_by', 'assigned_to', 'open', 'status_text', '_id'])
+    });
+    res.send(newIssues);
   }).catch((err) => res.status(400).send(`Something went wrong -> ${err}`));
 });
 
