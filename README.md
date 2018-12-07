@@ -45,8 +45,11 @@ Microservice project for tracking issues/bugs for different development projects
     {
       "issue_title": "issueTitle-edited",
       "issue_text": "issueText-edited",
+      "created_on": "createdOn-edited",
       "created_by": "createdBy-edited",
-      "status_text": "statusText-edited"
+      "assigned_to": "assignedTo-edited",
+      "open": false,
+      "status_text": "statusText-edited",
       "_id": "5c090dc1a0de0e006ef1422c"
     }
    ```
@@ -55,7 +58,8 @@ Microservice project for tracking issues/bugs for different development projects
   returned. If the request was successful, the message **successfully updated** will be returned.
 
   You can put either a string or a number for the request body fields.
-  The *updated_on* field will always get updated, when you execute the *PUT* endpoint.
+  The exception is the *open* field, where you can only put boolean values.
+  The *updated_on* field will always get updated with the current date and time, when you execute the *PUT* endpoint.
   If the *_id* field has an invalid format, or it doesn't belong
   to any issue from the database, then the message *could not update* will be shown. The same message will appear if the 
   *projectname* doesn't belong to any existing project.

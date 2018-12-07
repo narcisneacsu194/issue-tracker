@@ -58,6 +58,10 @@ app.post('/api/issues/:projectname', (req, res) => {
     });
 });
 
+app.put('/api/issues/:projectname', (req, res) => {
+  
+});
+
 app.listen(port, () => {
     console.log(`Server started up on port ${port}`);
 });
