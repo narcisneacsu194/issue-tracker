@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const { ObjectID } = require('mongodb');
 const _ = require('lodash');
+const moment = require('moment-timezone');
 require('./db/mongoose');
 const { Project } = require('./models/project');
 const { Issue } =  require('./models/issue');
@@ -30,8 +31,7 @@ app.post('/api/issues/:projectname', (req, res) => {
 
       return project;
     }).then((project) => {
-      let currentDate = new Date();
-      currentDate = currentDate.toString();
+      let currentDate = moment().format('ddd MMM DD YYYY HH:mm');
 
       const issue = new Issue({
           issue_title: body.issue_title,
@@ -75,8 +75,7 @@ app.put('/api/issues/:projectname', (req, res) => {
       return res.status(404).send('could not update');
     }
 
-    let currentDate = new Date();
-    currentDate = currentDate.toString();
+    let currentDate = moment().format('ddd MMM DD YYYY HH:mm');
     body.updated_on = currentDate;
 
     return Issue.findOneAndUpdate({_id: body._id}, {
@@ -109,7 +108,7 @@ app.delete('/api/issues/:projectname', (req, res) => {
     return Issue.findOneAndRemove({ _id: body._id });
   }).then((issue) => {
     if(!issue){
-      return res.status(404).send(`could not delete ${body._id}`);
+      return res.status(400).send(`could not delete ${body._id}`);
     }
 
     if(!issue.issue_title)return;
