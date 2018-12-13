@@ -31,6 +31,30 @@ let issues = [
   },
   {
     _id: new ObjectID(),
+    issue_title: 'issueTitle1.2',
+    issue_text: 'issueText1.2',
+    created_on: date,
+    updated_on: date,
+    created_by: 'createdBy1.2',
+    assigned_to: 'assignedTo1.2',
+    open: true,
+    status_text: 'statusText1.2',
+    project: 'project1'
+  },
+  {
+    _id: new ObjectID(),
+    issue_title: 'issueTitle1.3',
+    issue_text: 'issueText1.3',
+    created_on: date,
+    updated_on: date,
+    created_by: 'createdBy1.3',
+    assigned_to: 'assignedTo1.3',
+    open: true,
+    status_text: 'statusText1.3',
+    project: 'project1'
+  },
+  {
+    _id: new ObjectID(),
     issue_title: 'issueTitle2',
     issue_text: 'issueText2',
     created_on: date,
