@@ -681,7 +681,7 @@ describe('GET /api/issues/:projectname', () => {
           return done(err);
         }
 
-        return Issue.findOne({ _id }).then((dbIssue) => {
+        return Issue.findOne({ issue_title: issueTitle }).then((dbIssue) => {
           expectValues(dbIssue, issue);
           done();
         }).catch(error => done(error));
@@ -715,7 +715,7 @@ describe('GET /api/issues/:projectname', () => {
           return done(err);
         }
 
-        return Issue.findOne({ _id }).then((dbIssue) => {
+        return Issue.findOne({ issue_text: issueText }).then((dbIssue) => {
           expectValues(dbIssue, issue);
           done();
         }).catch(error => done(error));
@@ -764,27 +764,6 @@ describe('GET /api/issues/:projectname', () => {
       });
   });
 
-  it('should return three issues by querying the updated_on property', (done) => {
-    const projectName = 'project1';
-    const currentDate = moment().format('ddd MMM DD YYYY HH:mm');
-    request(app)
-      .get(`/api/issues/${projectName}?updated_on=${currentDate}`)
-      .expect(200)
-      .expect((res) => {
-        expect(res.body.length).toBe(3);
-      })
-      .end((err, res) => {
-        if (err) {
-          return done(err);
-        }
-
-        return Issue.find({ updated_on: currentDate }).then((dbIssues) => {
-          expect(dbIssues.length).toBe(4);
-          done();
-        }).catch(error => done(error));
-      });
-  });
-
   it('should return one issue by querying the created_by property', (done) => {
     const projectName = 'project1';
     const createdBy = 'createdBy1';
@@ -813,7 +792,7 @@ describe('GET /api/issues/:projectname', () => {
           return done(err);
         }
 
-        return Issue.findOne({ createdBy }).then((dbIssue) => {
+        return Issue.findOne({ created_by: createdBy }).then((dbIssue) => {
           expectValues(dbIssue, issue);
           done();
         }).catch(error => done(err));
@@ -848,7 +827,7 @@ describe('GET /api/issues/:projectname', () => {
           return done(err);
         }
 
-        return Issue.findOne({ assignedTo }).then((dbIssue) => {
+        return Issue.findOne({ assigned_to: assignedTo }).then((dbIssue) => {
           expectValues(dbIssue, issue);
           done();
         }).catch(error => done(error));
@@ -906,7 +885,7 @@ describe('GET /api/issues/:projectname', () => {
           return done(err);
         }
 
-        return Issue.findOne({ statusText }).then((dbIssue) => {
+        return Issue.findOne({ status_text: statusText }).then((dbIssue) => {
           expectValues(dbIssue, issue);
           done();
         }).catch(error => done(error));

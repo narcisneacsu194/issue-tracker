@@ -16,7 +16,7 @@ const projects = [
 
 const date = moment().format('ddd MMM DD YYYY HH:mm');
 
-let issues = [
+const issues = [
   {
     _id: new ObjectID(),
     issue_title: 'issueTitle1',
@@ -79,4 +79,6 @@ const populateIssueCollection = (done) => {
   });
 };
 
-module.exports = { populateProjectCollection, populateIssueCollection, projects, issues};
+module.exports = {
+  populateProjectCollection, populateIssueCollection, projects, issues
+};
