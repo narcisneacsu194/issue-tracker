@@ -5,7 +5,20 @@ const moment = require('moment-timezone');
 const { app } = require('../server');
 const { Project } = require('../models/project');
 const { Issue } = require('../models/issue');
-const { populateProjectCollection, populateIssueCollection, projects, issues} = require('./database/populateDatabase');
+const { populateProjectCollection, populateIssueCollection, issues } = require('./database/populateDatabase');
+
+const expectValues = (dbIssue, issue) => {
+  const date = moment().format('ddd MMM DD YYYY HH:mm');
+  expect(dbIssue.issue_title).toBe(issue.issue_title);
+  expect(dbIssue.issue_text).toBe(issue.issue_text);
+  expect(dbIssue.created_on).toBe(date);
+  expect(dbIssue.updated_on).toBe(date);
+  expect(dbIssue.created_by).toBe(issue.created_by);
+  expect(dbIssue.assigned_to).toBe(issue.assigned_to);
+  expect(dbIssue.open).toBe(issue.open);
+  expect(dbIssue.status_text).toBe(issue.status_text);
+  expect(dbIssue._id.toString()).toBe(issue._id);
+};
 
 beforeEach(populateProjectCollection);
 beforeEach(populateIssueCollection);
@@ -15,11 +28,11 @@ describe('POST /api/issues/:projectname', () => {
     const date = moment().format('ddd MMM DD YYYY HH:mm');
     const projectName = 'project3';
     const body = {
-        issue_title: 'issueTitle3',
-        issue_text: 'issueText3',
-        created_by: 'createdBy3',
-        assigned_to: 'assignedTo3',
-        status_text: 'statusText3'        
+      issue_title: 'issueTitle3',
+      issue_text: 'issueText3',
+      created_by: 'createdBy3',
+      assigned_to: 'assignedTo3',
+      status_text: 'statusText3'
     };
 
     request(app)
@@ -34,24 +47,24 @@ describe('POST /api/issues/:projectname', () => {
         expect(res.body.status_text).toBe(body.status_text);
       })
       .end((err, res) => {
-          if(err){
-            return done(err);
-          }
+        if (err) {
+          return done(err);
+        }
 
-          Project.findOne({ name: projectName}).then((project) => {
-            expect(project.name).toBe(projectName);
-            return Issue.findOne({ project: projectName });
-          }).then((issue) => {
-            expect(issue.issue_title).toEqual(body.issue_title);
-            expect(issue.issue_text).toBe(body.issue_text);
-            expect(issue.created_on).toBe(date);
-            expect(issue.updated_on).toBe(date);
-            expect(issue.created_by).toBe(body.created_by);
-            expect(issue.assigned_to).toBe(body.assigned_to);
-            expect(issue.open).toBeTruthy();
-            expect(issue.status_text).toBe(body.status_text);
-            done();
-          }).catch((err) => done(err));
+        return Project.findOne({ name: projectName }).then((project) => {
+          expect(project.name).toBe(projectName);
+          return Issue.findOne({ project: projectName });
+        }).then((issue) => {
+          expect(issue.issue_title).toEqual(body.issue_title);
+          expect(issue.issue_text).toBe(body.issue_text);
+          expect(issue.created_on).toBe(date);
+          expect(issue.updated_on).toBe(date);
+          expect(issue.created_by).toBe(body.created_by);
+          expect(issue.assigned_to).toBe(body.assigned_to);
+          expect(issue.open).toBeTruthy();
+          expect(issue.status_text).toBe(body.status_text);
+          done();
+        }).catch(error => done(error));
       });
   });
 
@@ -59,9 +72,9 @@ describe('POST /api/issues/:projectname', () => {
     const date = moment().format('ddd MMM DD YYYY HH:mm');
     const projectName = 'project3';
     const body = {
-        issue_title: 'issueTitle3',
-        issue_text: 'issueText3',
-        created_by: 'createdBy3'
+      issue_title: 'issueTitle3',
+      issue_text: 'issueText3',
+      created_by: 'createdBy3'
     };
 
     request(app)
@@ -79,34 +92,34 @@ describe('POST /api/issues/:projectname', () => {
         expect(res.body.open).toBeTruthy();
       })
       .end((err, res) => {
-          if(err){
-            return done(err);
-          }
+        if (err) {
+          return done(err);
+        }
 
-          Project.findOne({ name: projectName}).then((project) => {
-            expect(project.name).toBe(projectName);
-            return Issue.findOne({ project: projectName });
-          }).then((issue) => {
-            expect(issue.issue_title).toEqual(body.issue_title);
-            expect(issue.issue_text).toBe(body.issue_text);
-            expect(issue.created_on).toBe(date);
-            expect(issue.updated_on).toBe(date);
-            expect(issue.created_by).toBe(body.created_by);
-            expect(issue.assigned_to).toBe('');
-            expect(issue.open).toBeTruthy();
-            expect(issue.status_text).toBe('');
-            done();
-          }).catch((err) => done(err));
+        return Project.findOne({ name: projectName }).then((project) => {
+          expect(project.name).toBe(projectName);
+          return Issue.findOne({ project: projectName });
+        }).then((issue) => {
+          expect(issue.issue_title).toEqual(body.issue_title);
+          expect(issue.issue_text).toBe(body.issue_text);
+          expect(issue.created_on).toBe(date);
+          expect(issue.updated_on).toBe(date);
+          expect(issue.created_by).toBe(body.created_by);
+          expect(issue.assigned_to).toBe('');
+          expect(issue.open).toBeTruthy();
+          expect(issue.status_text).toBe('');
+          done();
+        }).catch(error => done(error));
       });
   });
 
   it('should return an error message if issue_title not provided', (done) => {
     const projectName = 'project3';
     const body = {
-        issue_text: 'issueText3',
-        created_by: 'createdBy3',
-        assigned_to: 'assignedTo3',
-        status_text: 'statusText3'        
+      issue_text: 'issueText3',
+      created_by: 'createdBy3',
+      assigned_to: 'assignedTo3',
+      status_text: 'statusText3'
     };
 
     request(app)
@@ -117,27 +130,27 @@ describe('POST /api/issues/:projectname', () => {
         expect(res.text).toBe('missing inputs');
       })
       .end((err, res) => {
-        if(err){
+        if (err) {
           return done(err);
         }
 
-        Project.findOne({ name: projectName}).then((project) => {
-            expect(project).toBeFalsy();
-            return Issue.findOne({ project: projectName });
-          }).then((issue) => {
-            expect(issue).toBeFalsy();
-            done();
-          }).catch((err) => done(err));
+        return Project.findOne({ name: projectName }).then((project) => {
+          expect(project).toBeFalsy();
+          return Issue.findOne({ project: projectName });
+        }).then((issue) => {
+          expect(issue).toBeFalsy();
+          done();
+        }).catch(error => done(error));
       });
   });
 
   it('should return an error message if issue_text not provided', (done) => {
     const projectName = 'project3';
     const body = {
-        issue_title: 'issueTitle3',
-        created_by: 'createdBy3',
-        assigned_to: 'assignedTo3',
-        status_text: 'statusText3'        
+      issue_title: 'issueTitle3',
+      created_by: 'createdBy3',
+      assigned_to: 'assignedTo3',
+      status_text: 'statusText3'
     };
 
     request(app)
@@ -148,27 +161,27 @@ describe('POST /api/issues/:projectname', () => {
         expect(res.text).toBe('missing inputs');
       })
       .end((err, res) => {
-        if(err){
+        if (err) {
           return done(err);
         }
 
-        Project.findOne({ name: projectName}).then((project) => {
-            expect(project).toBeFalsy();
-            return Issue.findOne({ project: projectName });
-          }).then((issue) => {
-            expect(issue).toBeFalsy();
-            done();
-          }).catch((err) => done(err));
+        return Project.findOne({ name: projectName }).then((project) => {
+          expect(project).toBeFalsy();
+          return Issue.findOne({ project: projectName });
+        }).then((issue) => {
+          expect(issue).toBeFalsy();
+          done();
+        }).catch(error => done(error));
       });
   });
 
   it('should return an error message if created_by not provided', (done) => {
     const projectName = 'project3';
     const body = {
-        issue_title: 'issueTitle3',
-        issue_text: 'issueText3',
-        assigned_to: 'assignedTo3',
-        status_text: 'statusText3'        
+      issue_title: 'issueTitle3',
+      issue_text: 'issueText3',
+      assigned_to: 'assignedTo3',
+      status_text: 'statusText3'
     };
 
     request(app)
@@ -179,17 +192,17 @@ describe('POST /api/issues/:projectname', () => {
         expect(res.text).toBe('missing inputs');
       })
       .end((err, res) => {
-        if(err){
+        if (err) {
           return done(err);
         }
 
-        Project.findOne({ name: projectName}).then((project) => {
-            expect(project).toBeFalsy();
-            return Issue.findOne({ project: projectName });
-          }).then((issue) => {
-            expect(issue).toBeFalsy();
-            done();
-          }).catch((err) => done(err));
+        return Project.findOne({ name: projectName }).then((project) => {
+          expect(project).toBeFalsy();
+          return Issue.findOne({ project: projectName });
+        }).then((issue) => {
+          expect(issue).toBeFalsy();
+          done();
+        }).catch(error => done(error));
       });
   });
 });
@@ -198,14 +211,14 @@ describe('PUT /api/issues/:projectname', () => {
   it('should successfully update the issue properties', (done) => {
     const projectName = 'project1';
     const body = {
-        issue_title: "issueTitle-edited",
-        issue_text: "issueText-edited",
-        created_by: "createdBy-edited",
-        created_on: "createdOn-edited",
-        assigned_to: "assignedTo-edited",
-        open: false,
-        status_text: "statusText-edited",
-        _id: issues[0]._id
+      issue_title: 'issueTitle-edited',
+      issue_text: 'issueText-edited',
+      created_by: 'createdBy-edited',
+      created_on: 'createdOn-edited',
+      assigned_to: 'assignedTo-edited',
+      open: false,
+      status_text: 'statusText-edited',
+      _id: issues[0]._id
     };
 
     request(app)
@@ -216,13 +229,12 @@ describe('PUT /api/issues/:projectname', () => {
         expect(res.text).toBe('successfully updated');
       })
       .end((err, res) => {
-        if(err){
+        if (err) {
           return done(err);
         }
 
-        Issue.findOne({ _id: issues[0]._id }).then((issue) => {
-
-          let currentDate = moment().format('ddd MMM DD YYYY HH:mm');
+        return Issue.findOne({ _id: issues[0]._id }).then((issue) => {
+          const currentDate = moment().format('ddd MMM DD YYYY HH:mm');
 
           expect(issue.issue_title).toBe(body.issue_title);
           expect(issue.issue_text).toBe(body.issue_text);
@@ -234,16 +246,16 @@ describe('PUT /api/issues/:projectname', () => {
           expect(issue.status_text).toBe(body.status_text);
           expect(issue._id).toEqual(body._id);
           done();
-        }).catch((err) => done(err));
+        }).catch(error => done(error));
       });
   });
 
   it('should return error message if no id property provided', (done) => {
     const projectName = 'project1';
     const body = {
-        issue_title: "issueTitle-edited",
-        issue_text: "issueText-edited",
-        created_by: "createdBy-edited"
+      issue_title: 'issueTitle-edited',
+      issue_text: 'issueText-edited',
+      created_by: 'createdBy-edited'
     };
 
     request(app)
@@ -254,25 +266,25 @@ describe('PUT /api/issues/:projectname', () => {
         expect(res.text).toBe('could not update');
       })
       .end((err, res) => {
-        if(err){
+        if (err) {
           return done(err);
         }
 
-        Issue.findOne({ issue_title: 'issueTitle-edited' })
-        .then((issue) => {
-          expect(issue).toBeFalsy();
-          done();
-        }).catch((err) => done(err));
+        return Issue.findOne({ issue_title: 'issueTitle-edited' })
+          .then((issue) => {
+            expect(issue).toBeFalsy();
+            done();
+          }).catch(error => done(error));
       });
   });
 
   it('should return error message if the provided id is an empty string', (done) => {
     const projectName = 'project1';
     const body = {
-        issue_title: "issueTitle-edited",
-        issue_text: "issueText-edited",
-        created_by: "createdBy-edited",
-        _id: " "
+      issue_title: 'issueTitle-edited',
+      issue_text: 'issueText-edited',
+      created_by: 'createdBy-edited',
+      _id: ' '
     };
 
     request(app)
@@ -283,25 +295,25 @@ describe('PUT /api/issues/:projectname', () => {
         expect(res.text).toBe('could not update');
       })
       .end((err, res) => {
-          if(err){
-            return done(err);
-          }
+        if (err) {
+          return done(err);
+        }
 
-          Issue.findOne({ issue_title: 'issueTitle-edited' })
-            .then((issue) => {
-              expect(issue).toBeFalsy();
-              done();
-            }).catch((err) => done(err));
+        return Issue.findOne({ issue_title: 'issueTitle-edited' })
+          .then((issue) => {
+            expect(issue).toBeFalsy();
+            done();
+          }).catch(error => done(error));
       });
   });
 
   it('should return error message if the provided id is not valid', (done) => {
     const projectName = 'project1';
     const body = {
-        issue_title: "issueTitle-edited",
-        issue_text: "issueText-edited",
-        created_by: "createdBy-edited",
-        _id: "123"
+      issue_title: 'issueTitle-edited',
+      issue_text: 'issueText-edited',
+      created_by: 'createdBy-edited',
+      _id: '123'
     };
 
     request(app)
@@ -312,15 +324,15 @@ describe('PUT /api/issues/:projectname', () => {
         expect(res.text).toBe('could not update');
       })
       .end((err, res) => {
-          if(err){
-            return done(err);
-          }
+        if (err) {
+          return done(err);
+        }
 
-          Issue.findOne({ issue_title: 'issueTitle-edited' })
-            .then((issue) => {
-              expect(issue).toBeFalsy();
-              done();
-            }).catch((err) => done(err));
+        return Issue.findOne({ issue_title: 'issueTitle-edited' })
+          .then((issue) => {
+            expect(issue).toBeFalsy();
+            done();
+          }).catch(error => done(error));
       });
   });
 
@@ -338,24 +350,24 @@ describe('PUT /api/issues/:projectname', () => {
         expect(res.text).toBe('no updated field sent');
       })
       .end((err, res) => {
-          if(err){
-            return done(err);
-          }
+        if (err) {
+          return done(err);
+        }
 
-          Issue.findOne({ _id: issues[0]._id}).then((issue) => {
-            expect(issue.issue_title).toBe(issues[0].issue_title);
-            done();
-          }).catch((err) => done(err));
+        return Issue.findOne({ _id: issues[0]._id }).then((issue) => {
+          expect(issue.issue_title).toBe(issues[0].issue_title);
+          done();
+        }).catch(error => done(error));
       });
   });
 
   it('should return error message if non-existing project is passed', (done) => {
     const projectName = 'project3';
     const body = {
-        issue_title: "issueTitle-edited",
-        issue_text: "issueText-edited",
-        created_by: "createdBy-edited",
-        _id: issues[0]._id
+      issue_title: 'issueTitle-edited',
+      issue_text: 'issueText-edited',
+      created_by: 'createdBy-edited',
+      _id: issues[0]._id
     };
 
     request(app)
@@ -366,24 +378,24 @@ describe('PUT /api/issues/:projectname', () => {
         expect(res.text).toBe('could not update');
       })
       .end((err, res) => {
-        if(err){
+        if (err) {
           return done(err);
         }
 
-        Issue.findOne({ _id: issues[0]._id}).then((issue) => {
-            expect(issue.issue_title).toBe(issues[0].issue_title);
-            done();
-          }).catch((err) => done(err));
+        return Issue.findOne({ _id: issues[0]._id }).then((issue) => {
+          expect(issue.issue_title).toBe(issues[0].issue_title);
+          done();
+        }).catch(error => done(error));
       });
   });
 
   it('should return error message if issue with given id doesn\'t exist', (done) => {
     const projectName = 'project1';
     const body = {
-        issue_title: "issueTitle-edited",
-        issue_text: "issueText-edited",
-        created_by: "createdBy-edited",
-        _id: new ObjectID()
+      issue_title: 'issueTitle-edited',
+      issue_text: 'issueText-edited',
+      created_by: 'createdBy-edited',
+      _id: new ObjectID()
     };
 
     request(app)
@@ -394,15 +406,15 @@ describe('PUT /api/issues/:projectname', () => {
         expect(res.text).toBe('could not update');
       })
       .end((err, res) => {
-        if(err){
+        if (err) {
           return done(err);
         }
 
-        Issue.findOne({ issue_title: 'issueTitle-edited' })
+        return Issue.findOne({ issue_title: 'issueTitle-edited' })
           .then((issue) => {
             expect(issue).toBeFalsy();
             done();
-          }).catch((err) => done(err));
+          }).catch(error => done(error));
       });
   });
 });
@@ -415,47 +427,47 @@ describe('DELETE /api/issues/:projectname', () => {
     };
 
     request(app)
-     .delete(`/api/issues/${projectName}`)
-     .send(body)
-     .expect((res) => {
-       expect(`deleted ${body._id}`);
-     })
-     .end((err, res) => {
-       if(err){
-         return done(err);
-       }
+      .delete(`/api/issues/${projectName}`)
+      .send(body)
+      .expect((res) => {
+        expect(`deleted ${body._id}`);
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
 
-       Issue.find({}).then((issues) => {
-        expect(issues.length).toBe(3);
-        return Issue.findOne({ _id: body._id });
-       }).then((issue) => {
-         expect(issue).toBeFalsy();
-         done();
-       })
-       .catch((err) => done(err));
-     });
+        return Issue.find({}).then((dbIssues) => {
+          expect(dbIssues.length).toBe(3);
+          return Issue.findOne({ _id: body._id });
+        }).then((issue) => {
+          expect(issue).toBeFalsy();
+          done();
+        })
+          .catch(error => done(err));
+      });
   });
 
   it('should return error message if no issue id provided', (done) => {
     const projectName = 'project1';
 
     request(app)
-     .delete(`/api/issues/${projectName}`)
-     .send({})
-     .expect(400)
-     .expect((res) => {
-       expect(res.text).toBe('_id error.');
-     })
-     .end((err, res) => {
-       if(err){
-         return done(err);
-       }
+      .delete(`/api/issues/${projectName}`)
+      .send({})
+      .expect(400)
+      .expect((res) => {
+        expect(res.text).toBe('_id error.');
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
 
-       Issue.find({}).then((issues) => {
-        expect(issues.length).toBe(4);
-        done();
-       }).catch((err) => done(err));
-     });
+        return Issue.find({}).then((dbIssues) => {
+          expect(dbIssues.length).toBe(4);
+          done();
+        }).catch(error => done(error));
+      });
   });
 
   it('should return error message if the issue id is an empty string', (done) => {
@@ -472,14 +484,14 @@ describe('DELETE /api/issues/:projectname', () => {
         expect(res.text).toBe('_id error.');
       })
       .end((err, res) => {
-        if(err){
+        if (err) {
           return done(err);
         }
 
-        Issue.find({}).then((issues) => {
+        return Issue.find({}).then((dbIssues) => {
           expect(issues.length).toBe(4);
           done();
-         }).catch((err) => done(err));
+        }).catch(error => done(error));
       });
   });
 
@@ -497,14 +509,14 @@ describe('DELETE /api/issues/:projectname', () => {
         expect(res.text).toBe('_id error.');
       })
       .end((err, res) => {
-        if(err){
+        if (err) {
           return done(err);
         }
 
-        Issue.find({}).then((issues) => {
-          expect(issues.length).toBe(4);
+        return Issue.find({}).then((dbIssues) => {
+          expect(dbIssues.length).toBe(4);
           done();
-        }).catch((err) => done(err));
+        }).catch(error => done(error));
       });
   });
 
@@ -522,14 +534,14 @@ describe('DELETE /api/issues/:projectname', () => {
         expect(res.text).toBe(`could not delete ${body._id}`);
       })
       .end((err, res) => {
-        if(err){
+        if (err) {
           return done(err);
         }
 
-        Issue.find({}).then((issues) => {
-          expect(issues.length).toBe(4);
+        return Issue.find({}).then((dbIssues) => {
+          expect(dbIssues.length).toBe(4);
           done();
-        }).catch((err) => done(err));
+        }).catch(error => done(error));
       });
   });
 
@@ -554,59 +566,59 @@ describe('GET /api/issues/:projectname', () => {
   it('should get all the issues of a specific project', (done) => {
     const projectName = 'project1';
     const expectedResponse = [
-    {
-      issue_title: 'issueTitle1',
-      issue_text: 'issueText1',
-      created_on: moment().format('ddd MMM DD YYYY HH:mm'),
-      updated_on: moment().format('ddd MMM DD YYYY HH:mm'),
-      created_by: 'createdBy1',
-      assigned_to: 'assignedTo1',
-      open: true,
-      status_text: 'statusText1',
-      _id: issues[0]._id.toString()
-    },
-    {
-      issue_title: 'issueTitle1.2',
-      issue_text: 'issueText1.2',
-      created_on: moment().format('ddd MMM DD YYYY HH:mm'),
-      updated_on: moment().format('ddd MMM DD YYYY HH:mm'),
-      created_by: 'createdBy1.2',
-      assigned_to: 'assignedTo1.2',
-      open: true,
-      status_text: 'statusText1.2',
-      _id: issues[1]._id.toString()
-    },
-    {
-      issue_title: 'issueTitle1.3',
-      issue_text: 'issueText1.3',
-      created_on: moment().format('ddd MMM DD YYYY HH:mm'),
-      updated_on: moment().format('ddd MMM DD YYYY HH:mm'),
-      created_by: 'createdBy1.3',
-      assigned_to: 'assignedTo1.3',
-      open: true,
-      status_text: 'statusText1.3',
-      _id: issues[2]._id.toString()
-    }
-];
+      {
+        issue_title: 'issueTitle1',
+        issue_text: 'issueText1',
+        created_on: moment().format('ddd MMM DD YYYY HH:mm'),
+        updated_on: moment().format('ddd MMM DD YYYY HH:mm'),
+        created_by: 'createdBy1',
+        assigned_to: 'assignedTo1',
+        open: true,
+        status_text: 'statusText1',
+        _id: issues[0]._id.toString()
+      },
+      {
+        issue_title: 'issueTitle1.2',
+        issue_text: 'issueText1.2',
+        created_on: moment().format('ddd MMM DD YYYY HH:mm'),
+        updated_on: moment().format('ddd MMM DD YYYY HH:mm'),
+        created_by: 'createdBy1.2',
+        assigned_to: 'assignedTo1.2',
+        open: true,
+        status_text: 'statusText1.2',
+        _id: issues[1]._id.toString()
+      },
+      {
+        issue_title: 'issueTitle1.3',
+        issue_text: 'issueText1.3',
+        created_on: moment().format('ddd MMM DD YYYY HH:mm'),
+        updated_on: moment().format('ddd MMM DD YYYY HH:mm'),
+        created_by: 'createdBy1.3',
+        assigned_to: 'assignedTo1.3',
+        open: true,
+        status_text: 'statusText1.3',
+        _id: issues[2]._id.toString()
+      }
+    ];
 
     request(app)
-     .get(`/api/issues/${projectName}`)
-     .expect(200)
-     .expect((res) => {
-      expect(res.body[0]).toEqual(expectedResponse[0]);
-      expect(res.body[1]).toEqual(expectedResponse[1]);
-      expect(res.body[2]).toEqual(expectedResponse[2]);
-     })
-     .end((err, res) => {
-       if(err){
-         return done();
-       }
+      .get(`/api/issues/${projectName}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body[0]).toEqual(expectedResponse[0]);
+        expect(res.body[1]).toEqual(expectedResponse[1]);
+        expect(res.body[2]).toEqual(expectedResponse[2]);
+      })
+      .end((err, res) => {
+        if (err) {
+          return done();
+        }
 
-       Issue.find({}).then((issues) => {
-        expect(issues.length).toBe(4);
-        done();
-       }).catch((err) => done(err));
-     });
+        return Issue.find({}).then((dbIssues) => {
+          expect(dbIssues.length).toBe(4);
+          done();
+        }).catch(error => done(error));
+      });
   });
 
   it('should return one issue by querying the id property', (done) => {
@@ -625,30 +637,29 @@ describe('GET /api/issues/:projectname', () => {
     };
 
     request(app)
-     .get(`/api/issues/${projectName}?_id=${_id}`)
-     .expect(200)
-     .expect((res) => {
-       expect(res.body[0]).toEqual(issue);
-     })
-     .end((err, res) => {
-       if(err){
-         return done(err);
-       }
+      .get(`/api/issues/${projectName}?_id=${_id}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body[0]).toEqual(issue);
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
 
-       Issue.findOne({ _id }).then((dbIssue) => {
-        const date = moment().format('ddd MMM DD YYYY HH:mm');
-        expectValues(dbIssue, issue);
-        done();
-       }).catch((err) => done(err));
-     });
+        return Issue.findOne({ _id }).then((dbIssue) => {
+          expectValues(dbIssue, issue);
+          done();
+        }).catch(error => done(error));
+      });
   });
 
   it('should return one issue by querying the issue_title property', (done) => {
     const projectName = 'project1';
-    const issue_title = issues[1].issue_title;
+    const issueTitle = issues[1].issue_title;
     const _id = issues[1]._id.toString();
     const issue = {
-      issue_title,
+      issue_title: issueTitle,
       issue_text: 'issueText1.2',
       created_on: moment().format('ddd MMM DD YYYY HH:mm'),
       updated_on: moment().format('ddd MMM DD YYYY HH:mm'),
@@ -660,30 +671,30 @@ describe('GET /api/issues/:projectname', () => {
     };
 
     request(app)
-     .get(`/api/issues/${projectName}?issue_title=${issue_title}`)
-     .expect(200)
-     .expect((res) => {
-       expect(res.body[0]).toEqual(issue);
-     })
-     .end((err, res) => {
-       if(err){
-         return done(err);
-       }
+      .get(`/api/issues/${projectName}?issue_title=${issueTitle}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body[0]).toEqual(issue);
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
 
-       Issue.findOne({ _id }).then((dbIssue) => {
-        expectValues(dbIssue, issue);
-        done();
-       }).catch((err) => done(err));
-     });
+        return Issue.findOne({ _id }).then((dbIssue) => {
+          expectValues(dbIssue, issue);
+          done();
+        }).catch(error => done(error));
+      });
   });
 
   it('should return one issue by querying the issue_text property', (done) => {
     const projectName = 'project1';
-    const issue_text = issues[2].issue_text;
+    const issueText = issues[2].issue_text;
     const _id = issues[2]._id.toString();
     const issue = {
       issue_title: 'issueTitle1.3',
-      issue_text,
+      issue_text: issueText,
       created_on: moment().format('ddd MMM DD YYYY HH:mm'),
       updated_on: moment().format('ddd MMM DD YYYY HH:mm'),
       created_by: 'createdBy1.3',
@@ -694,89 +705,89 @@ describe('GET /api/issues/:projectname', () => {
     };
 
     request(app)
-     .get(`/api/issues/${projectName}?issue_text=${issue_text}`)
-     .expect(200)
-     .expect((res) => {
-       expect(res.body[0]).toEqual(issue);
-     })
-     .end((err, res) => {
-       if(err){
-         return done(err);
-       }
+      .get(`/api/issues/${projectName}?issue_text=${issueText}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body[0]).toEqual(issue);
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
 
-       Issue.findOne({ _id }).then((dbIssue) => {
-        expectValues(dbIssue, issue);
-        done();
-       }).catch((err) => done(err));
-     });
+        return Issue.findOne({ _id }).then((dbIssue) => {
+          expectValues(dbIssue, issue);
+          done();
+        }).catch(error => done(error));
+      });
   });
 
   it('should return three issues by querying the created_on property', (done) => {
     const projectName = 'project1';
     const currentDate = moment().format('ddd MMM DD YYYY HH:mm');
     request(app)
-     .get(`/api/issues/${projectName}?created_on=${currentDate}`)
-     .expect(200)
-     .expect((res) => {
-       expect(res.body.length).toBe(3);
-     })
-     .end((err, res) => {
-       if(err){
-         return done(err);
-       }
+      .get(`/api/issues/${projectName}?created_on=${currentDate}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.length).toBe(3);
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
 
-       Issue.find({ created_on: currentDate }).then((issues) => {
-         expect(issues.length).toBe(4);
-         done();
-       }).catch((err) => done(err));
-     });
+        return Issue.find({ created_on: currentDate }).then((dbIssues) => {
+          expect(dbIssues.length).toBe(4);
+          done();
+        }).catch(error => done(error));
+      });
   });
 
   it('should return three issues by querying the updated_on property', (done) => {
     const projectName = 'project1';
     const currentDate = moment().format('ddd MMM DD YYYY HH:mm');
     request(app)
-     .get(`/api/issues/${projectName}?updated_on=${currentDate}`)
-     .expect(200)
-     .expect((res) => {
-       expect(res.body.length).toBe(3);
-     })
-     .end((err, res) => {
-       if(err){
-         return done(err);
-       }
+      .get(`/api/issues/${projectName}?updated_on=${currentDate}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.length).toBe(3);
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
 
-       Issue.find({ updated_on: currentDate }).then((issues) => {
-         expect(issues.length).toBe(4);
-         done();
-       }).catch((err) => done(err));
-     });
+        return Issue.find({ updated_on: currentDate }).then((dbissues) => {
+          expect(dbissues.length).toBe(4);
+          done();
+        }).catch(error => done(error));
+      });
   });
 
   it('should return three issues by querying the updated_on property', (done) => {
     const projectName = 'project1';
     const currentDate = moment().format('ddd MMM DD YYYY HH:mm');
     request(app)
-     .get(`/api/issues/${projectName}?updated_on=${currentDate}`)
-     .expect(200)
-     .expect((res) => {
-       expect(res.body.length).toBe(3);
-     })
-     .end((err, res) => {
-       if(err){
-         return done(err);
-       }
+      .get(`/api/issues/${projectName}?updated_on=${currentDate}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.length).toBe(3);
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
 
-       Issue.find({ updated_on: currentDate }).then((issues) => {
-         expect(issues.length).toBe(4);
-         done();
-       }).catch((err) => done(err));
-     });
+        return Issue.find({ updated_on: currentDate }).then((dbIssues) => {
+          expect(dbIssues.length).toBe(4);
+          done();
+        }).catch(error => done(error));
+      });
   });
 
   it('should return one issue by querying the created_by property', (done) => {
     const projectName = 'project1';
-    const created_by = 'createdBy1';
+    const createdBy = 'createdBy1';
     const _id = issues[0]._id.toString();
 
     const issue = {
@@ -792,26 +803,26 @@ describe('GET /api/issues/:projectname', () => {
     };
 
     request(app)
-     .get(`/api/issues/${projectName}?created_by=${created_by}`)
-     .expect(200)
-     .expect((res) => {
-       expect(res.body[0]).toEqual(issue);
-     })
-     .end((err, res) => {
-       if(err){
-         return done(err);
-       }
+      .get(`/api/issues/${projectName}?created_by=${createdBy}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body[0]).toEqual(issue);
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
 
-       Issue.findOne({ created_by }).then((dbIssue) => {
-         expectValues(dbIssue, issue);
-         done();
-       }).catch((err) => done(err));
-     });
+        return Issue.findOne({ createdBy }).then((dbIssue) => {
+          expectValues(dbIssue, issue);
+          done();
+        }).catch(error => done(err));
+      });
   });
 
   it('should return one issue by querying the assigned_to property', (done) => {
     const projectName = 'project1';
-    const assigned_to = 'assignedTo1';
+    const assignedTo = 'assignedTo1';
     const _id = issues[0]._id.toString();
 
     const issue = {
@@ -827,21 +838,21 @@ describe('GET /api/issues/:projectname', () => {
     };
 
     request(app)
-     .get(`/api/issues/${projectName}?assigned_to=${assigned_to}`)
-     .expect(200)
-     .expect((res) => {
-       expect(res.body[0]).toEqual(issue);
-     })
-     .end((err, res) => {
-       if(err){
-         return done(err);
-       }
+      .get(`/api/issues/${projectName}?assigned_to=${assignedTo}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body[0]).toEqual(issue);
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
 
-       Issue.findOne({ assigned_to }).then((dbIssue) => {
-         expectValues(dbIssue, issue);
-         done();
-       }).catch((err) => done(err));
-     });
+        return Issue.findOne({ assignedTo }).then((dbIssue) => {
+          expectValues(dbIssue, issue);
+          done();
+        }).catch(error => done(error));
+      });
   });
 
   it('should return three issues by querying the open property', (done) => {
@@ -849,26 +860,26 @@ describe('GET /api/issues/:projectname', () => {
     const open = true;
 
     request(app)
-     .get(`/api/issues/${projectName}?open=${open}`)
-     .expect(200)
-     .expect((res) => {
-       expect(res.body.length).toBe(3);
-     })
-     .end((err, res) => {
-       if(err){
-         return done(err);
-       }
+      .get(`/api/issues/${projectName}?open=${open}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.length).toBe(3);
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
 
-       Issue.find({ open }).then((dbIssues) => {
-         expect(dbIssues.length).toBe(3);
-         done();
-       }).catch((err) => done(err));
-     });
+        return Issue.find({ open }).then((dbIssues) => {
+          expect(dbIssues.length).toBe(3);
+          done();
+        }).catch(error => done(error));
+      });
   });
 
   it('should return one issue by querying the status_text property', (done) => {
     const projectName = 'project1';
-    const status_text = 'statusText1';
+    const statusText = 'statusText1';
 
     const _id = issues[0]._id.toString();
 
@@ -885,33 +896,20 @@ describe('GET /api/issues/:projectname', () => {
     };
 
     request(app)
-     .get(`/api/issues/${projectName}?status_text=${status_text}`)
-     .expect(200)
-     .expect((res) => {
-       expect(res.body[0]).toEqual(issue);
-     })
-     .end((err, res) => {
-       if(err){
-         return done(err);
-       }
+      .get(`/api/issues/${projectName}?status_text=${statusText}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body[0]).toEqual(issue);
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err);
+        }
 
-       Issue.findOne({ status_text }).then((dbIssue) => {
-         expectValues(dbIssue, issue);
-         done();
-       }).catch((err) => done(err));
-     });
+        return Issue.findOne({ statusText }).then((dbIssue) => {
+          expectValues(dbIssue, issue);
+          done();
+        }).catch(error => done(error));
+      });
   });
 });
-
-const expectValues = (dbIssue, issue) => {
-  const date = moment().format('ddd MMM DD YYYY HH:mm');
-  expect(dbIssue.issue_title).toBe(issue.issue_title);
-        expect(dbIssue.issue_text).toBe(issue.issue_text);
-        expect(dbIssue.created_on).toBe(date);
-        expect(dbIssue.updated_on).toBe(date);
-        expect(dbIssue.created_by).toBe(issue.created_by);
-        expect(dbIssue.assigned_to).toBe(issue.assigned_to);
-        expect(dbIssue.open).toBe(issue.open);
-        expect(dbIssue.status_text).toBe(issue.status_text);
-        expect(dbIssue._id.toString()).toBe(issue._id);
-};
